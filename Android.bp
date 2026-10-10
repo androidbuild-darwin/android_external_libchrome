@@ -506,10 +506,16 @@ filegroup {
     ],
 }
 
+python_binary_host {
+    name: "libchrome-include-generator",
+    main: "libchrome_tools/include_generator.py",
+    srcs: ["libchrome_tools/include_generator.py"],
+}
+
 gensrcs {
     name: "libchrome-include",
-    cmd: "$(location libchrome_tools/include_generator.py) $(in) $(out)",
-    tool_files: ["libchrome_tools/include_generator.py"],
+    cmd: "$(location libchrome-include-generator) $(in) $(out)",
+    tools: ["libchrome-include-generator"],
     export_include_dirs: ["."],
     srcs: [":libchrome-include-sources"],
     output_extension: "h",
@@ -912,8 +918,8 @@ cc_library {
 // libchrome-include for the details.
 gensrcs {
     name: "libchrome-crypto-include",
-    cmd: "$(location libchrome_tools/include_generator.py) $(in) $(out)",
-    tool_files: ["libchrome_tools/include_generator.py"],
+    cmd: "$(location libchrome-include-generator) $(in) $(out)",
+    tools: ["libchrome-include-generator"],
     export_include_dirs: ["."],
     srcs: ["crypto/**/*.h"],
     output_extension: "h",
