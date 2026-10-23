@@ -43,10 +43,13 @@ def GenerateJNIHeader(java_file_paths, output_file, args):
   """
   # Without multiprocessing, script takes ~13 seconds for chrome_public_apk
   # on a z620. With multiprocessing, takes ~2 seconds.
-  pool = multiprocessing.Pool()
   paths = (p for p in java_file_paths if p not in args.no_register_java)
-  results = [d for d in pool.imap_unordered(_DictForPath, paths) if d]
-  pool.close()
+  if sys.platform == 'darwin':
+    # The embedded Python launcher cannot spawn another interpreter on macOS.
+    results = [d for d in map(_DictForPath, paths) if d]
+  else:
+    with multiprocessing.Pool() as pool:
+      results = [d for d in pool.imap_unordered(_DictForPath, paths) if d]
 
   # Sort to make output deterministic.
   results.sort(key=lambda d: d['FULL_CLASS_NAME'])
